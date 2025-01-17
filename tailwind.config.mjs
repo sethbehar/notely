@@ -10,6 +10,7 @@ export default {
   	extend: {
 		fontFamily: {
 			playwrite: ['"Playwrite IN"', 'serif'],
+			poppins: ['"Poppins"', 'sans-serif'],
 		  },
   		colors: {
   			background: 'hsl(var(--background))',

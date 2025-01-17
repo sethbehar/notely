@@ -1,12 +1,15 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { FaBookOpenReader } from "react-icons/fa6";
 
 export function Navbar() {
   return (
-    (<header className="border-b bg-white">
+    <header className="border-b bg-white font-poppins font-semibold">
       <nav className="flex h-16 items-center justify-between gap-32 p-8">
-        <Link href="/" className="font-playwrite text-xl font-semibold text-gray-900 flex items-center gap-2">
+        <Link
+          href="/"
+          className="font-playwrite text-xl font-semibold text-gray-900 flex items-center gap-2"
+        >
           {/* <FaBookOpenReader /> */}
           <h1>Notely</h1>
         </Link>
@@ -24,11 +27,15 @@ export function Navbar() {
             About Us
           </Link>
         </div>
-        <Button size="sm" className="bg-emerald-500  hover:bg-emerald-600">
-          Sign Up
-        </Button>
+        <div className="flex items-center justify-center gap-2">
+          <Button size="sm" variant="outline">
+            Login
+          </Button>
+          <Button size="sm" className="bg-emerald-500  hover:bg-emerald-600">
+            Sign Up
+          </Button>
+        </div>
       </nav>
-    </header>)
+    </header>
   );
 }
-
