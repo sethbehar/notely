@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 export function Hero() {
   return (
     (<section className="bg-gradient-to-b from-emerald-50 to-white py-20">
-      <div className="container flex flex-col items-center text-center">
+      <div className="flex flex-col items-center text-center">
         <h1
           className="max-w-3xl text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
           Study Smart and Organized, with AI

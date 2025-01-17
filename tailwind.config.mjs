@@ -8,6 +8,9 @@ export default {
   ],
   theme: {
   	extend: {
+		fontFamily: {
+			playwrite: ['"Playwrite IN"', 'serif'],
+		  },
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
