@@ -1,6 +1,12 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { FaBookOpenReader } from "react-icons/fa6";
+import {
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton
+} from '@clerk/nextjs'
 
 export function Navbar() {
   return (
@@ -28,12 +34,12 @@ export function Navbar() {
           </Link>
         </div>
         <div className="flex items-center justify-center gap-2">
-          <Button size="sm" variant="outline">
-            Login
-          </Button>
-          <Button size="sm" className="bg-emerald-500  hover:bg-emerald-600">
-            Sign Up
-          </Button>
+          <SignedOut>
+            <SignInButton />
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
         </div>
       </nav>
     </header>
