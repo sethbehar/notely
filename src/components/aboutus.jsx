@@ -4,12 +4,12 @@ const people = [
   {
     name: "Jake Moss",
     image: "https://media.licdn.com/dms/image/v2/D4E03AQHQ3u1GxBAC7Q/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1695044000689?e=1743033600&v=beta&t=NBgLiKt391oD5fPDLq-MLLhhQbUghcS1xV9QURiE1lU",
-    description: "Jake is a 10x developer with 40 YOE",
+    description: "Jake is a 10x dev with 40 YOE",
   },
   {
     name: "Seth Behar",
     image: "https://media.licdn.com/dms/image/v2/D4E03AQGax1nSkMoA2A/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1724369421965?e=1743033600&v=beta&t=ZOXOIFdvzyFwYa7-ZoCOvVf2tSjamTjj52vUhR3t7Bc",
-    description: "Seth is a 10x developer with 40 YOE",
+    description: "Seth is a 10x dev with 40 YOE",
   },
 ]
 export function AboutUs() {
