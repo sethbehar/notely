@@ -3,11 +3,11 @@ import { useId } from "react";
 
 export function ProductFeatures() {
   return (
-    <div className="flex flex-col items-center justify-center mt-12 mb-10 w-full">
+    <div className="flex flex-col items-center justify-center mt-16 mb-10 w-full">
       <h1 className="font-poppins text-3xl font-semibold mb-8">
         Our Cutting Edge Features
       </h1>
-      <div className="pb-20 lg:pb-40 font-poppins">
+      <div className="pb-10 lg:pb-10 font-poppins">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 md:gap-2 max-w-7xl mx-auto">
           {grid.map((feature) => (
             <div
