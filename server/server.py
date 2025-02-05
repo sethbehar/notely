@@ -1,21 +1,36 @@
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 from huggingface_hub import InferenceClient
+from dotenv import load_dotenv
+import os
 
-client = InferenceClient(
-	provider="together",
-	api_key=""
-)
+# Load environment variables
+load_dotenv()
 
-messages = [
-	{
-		"role": "user",
-		"content": "What is the capital of France? Answer in one word only."
-	}
-]
+app = Flask(__name__)
+CORS(app)  # Allows frontend to call this API
 
-completion = client.chat.completions.create(
-    model="deepseek-ai/DeepSeek-R1", 
-	messages=messages, 
-	max_tokens=500
-)
+client = InferenceClient(api_key=os.getenv("MOSS_KEY"))
 
-print(completion.choices[0].message)
+@app.route("/chat", methods=["POST"])
+def chat():
+    data = request.get_json()
+    user_message = data.get("message", "")
+
+    messages = [
+        {"role": "user", "content": user_message}
+    ]
+
+    try:
+        completion = client.chat.completions.create(
+        model="meta-llama/Meta-Llama-3-8B-Instruct", 
+        messages=messages, 
+        max_tokens=500
+    )
+        response = completion.choices[0].message["content"]
+        return jsonify({"response": response})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+if __name__ == "__main__":
+    app.run(debug=True, port=5000)

@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
+import axios from "axios";
 import { Sidebar, SidebarBody, SidebarLink } from "../../components/ui/sidebar";
 import {
   IconArrowLeft,
@@ -15,6 +16,7 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 export default function SidebarDemo() {
+
   const links = [
     {
       label: "Dashboard",
@@ -69,7 +71,7 @@ export default function SidebarDemo() {
                 label: "Jacob Moss",
                 href: "#",
                 icon: (
-                    <FaCircleUser className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0"/>
+                  <FaCircleUser className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
                 ),
               }}
             />
@@ -111,11 +113,47 @@ export const LogoIcon = () => {
 
 // Dummy dashboard component with content
 const Dashboard = () => {
+
+  const [input, setInput] = useState("");
+  const [response, setResponse] = useState("");
+
+  const handleSend = async () => {
+    try {
+      const res = await axios.post("http://127.0.0.1:5000/chat", {
+        message: input,
+      });
+      setResponse(res.data.response);
+    } catch (error) {
+      console.error("Error fetching response:", error);
+      setResponse("Error fetching response.");
+    }
+  };
+
   return (
     <div className="flex flex-1">
       <div
         className="p-2 md:p-10 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex flex-col gap-2 flex-1 w-full h-full"
       >
+        <div className="p-4">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Ask me something..."
+            className="border p-2 w-full"
+          />
+          <button
+            onClick={handleSend}
+            className="bg-blue-500 text-white p-2 mt-2 rounded"
+          >
+            Send
+          </button>
+          {response && (
+            <div className="mt-4 p-2 border rounded bg-gray-100">
+              <strong>AI Response:</strong> {response}
+            </div>
+          )}
+        </div>
         <div className="flex gap-2">
           {[...new Array(4)].map((_, idx) => (
             <div
