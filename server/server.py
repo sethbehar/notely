@@ -22,11 +22,11 @@ def chat():
     ]
 
     try:
-        completion = client.chat_completions.create(
-            model="meta-llama/Meta-Llama-3-8B-Instruct",
-            messages=messages,
-            max_tokens=500
-        )
+        completion = client.chat.completions.create(
+        model="meta-llama/Meta-Llama-3-8B-Instruct", 
+        messages=messages, 
+        max_tokens=500
+    )
         response = completion.choices[0].message["content"]
         return jsonify({"response": response})
     except Exception as e:
