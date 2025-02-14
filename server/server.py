@@ -13,12 +13,6 @@ CORS(app)  # Allows frontend to call this API
 
 client = InferenceClient(api_key=os.getenv("MOSS_KEY"))
 
-
-
-
-
-
-
 @app.route("/chat", methods=["POST"])
 def chat():
     data = request.get_json()
