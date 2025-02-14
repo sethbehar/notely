@@ -20,8 +20,8 @@ export function Navbar() {
           <h1>Notely</h1>
         </Link>
         <div className="hidden gap-6 md:flex">
-          <Link href="#" className="text-sm text-gray-600 hover:text-gray-900">
-            Product
+          <Link href="/test" className="text-sm text-gray-600 hover:text-gray-900">
+            Dashboard
           </Link>
           <Link href="#" className="text-sm text-gray-600 hover:text-gray-900">
             Features
@@ -35,7 +35,9 @@ export function Navbar() {
         </div>
         <div className="flex items-center justify-center gap-2">
           <SignedOut>
-            <SignInButton />
+          <Button size="lg" className="bg-emerald-500 hover:bg-emerald-600">
+          <SignInButton />
+          </Button>
           </SignedOut>
           <SignedIn>
             <UserButton />
