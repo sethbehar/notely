@@ -40,7 +40,7 @@ export function Hero() {
           <Button size="lg" className="bg-emerald-500 hover:bg-emerald-600">
             Sign Up
           </Button>
-          <Button size="lg" variant="outline">
+          <Button size="lg" variant="outline" className="hover:bg-gray-200 transition-all">
             View Demo
           </Button>
         </div>

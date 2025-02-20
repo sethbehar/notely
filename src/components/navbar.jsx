@@ -35,9 +35,7 @@ export function Navbar() {
         </div>
         <div className="flex items-center justify-center gap-2">
           <SignedOut>
-          <Button size="lg" className="bg-emerald-500 hover:bg-emerald-600">
           <SignInButton />
-          </Button>
           </SignedOut>
           <SignedIn>
             <UserButton />
