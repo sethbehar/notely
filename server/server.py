@@ -28,7 +28,7 @@ conversation = {
     "conversation_id": str(ObjectId()),
     "user_message": "Hello",
     "ai_response": "Hi there!",
-    "timestamp": datetime.now()  # using utcnow for consistency
+    "timestamp": datetime.now()
 }
 
 try:
