@@ -17,7 +17,6 @@ CORS(app)  # Allows frontend to call this API
 hf_client = InferenceClient(api_key=os.getenv("MOSS_KEY"))
 
 # Initialize MongoDB client
-print(os.getenv("MONGO_URI"))
 mongo_client = MongoClient(os.getenv("MONGO_URI"))
 
 db = mongo_client.chat_history  # database name
