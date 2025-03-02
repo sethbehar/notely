@@ -17,10 +17,24 @@ CORS(app)  # Allows frontend to call this API
 hf_client = InferenceClient(api_key=os.getenv("MOSS_KEY"))
 
 # Initialize MongoDB client
-mongo_client = MongoClient(os.getenv("MONGODB_URI"))
+mongo_client = MongoClient(os.getenv("MONGO_URI"))
+
 db = mongo_client.chat_history  # database name
 conversations = db.conversations  # collection name
 
+conversation = {
+    "user_id": "test-user",
+    "conversation_id": str(ObjectId()),
+    "user_message": "Hello",
+    "ai_response": "Hi there!",
+    "timestamp": datetime.now()
+}
+
+try:
+    result = conversations.insert_one(conversation)
+    print("Inserted document id:", result.inserted_id)
+except Exception as e:
+    print("Insert failed:", e)
 
 @app.route("/chat", methods=["POST"])
 def chat():
@@ -39,12 +53,14 @@ def chat():
 
     try:
         # Get AI response from HuggingFace
+        print("Here")
         completion = hf_client.chat.completions.create(
             model="meta-llama/Meta-Llama-3-8B-Instruct", 
             messages=messages, 
             max_tokens=500
         )
         ai_response = completion.choices[0].message["content"]
+        print(ai_response)
         
         # Build the conversation document including the Clerk user ID
         conversation = {
@@ -52,9 +68,10 @@ def chat():
             "conversation_id": conversation_id,
             "user_message": user_message,
             "ai_response": ai_response,
-            "timestamp": datetime.utcnow()
+            "timestamp": datetime.now()
         }
         
+        print("Conversation doc:", conversation) 
         # Save the conversation to MongoDB
         conversations.insert_one(conversation)
         

@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
-import axios from "axios";
-import { Sidebar, SidebarBody, SidebarLink } from "../../components/ui/sidebar";
+import { useUser } from '@clerk/nextjs';
+import axios from "axios";import { Sidebar, SidebarBody, SidebarLink } from "../../components/ui/sidebar";
 import {
   IconArrowLeft,
   IconBrandTabler,
@@ -111,23 +111,35 @@ export const LogoIcon = () => {
   );
 };
 
-// Dummy dashboard component with content
 const Dashboard = () => {
 
+  const { user, isLoaded, isSignedIn } = useUser();
   const [input, setInput] = useState("");
   const [response, setResponse] = useState("");
 
+  if (!isLoaded) {
+    return <div className="flex flex-1"><div className="p-2 md:p-10">Loading...</div></div>;
+  }
+
+  if (!isSignedIn) {
+    return <div>Please sign in.</div>;
+  }
   const handleSend = async () => {
+    console.log("User: ", user)
     try {
-      const res = await axios.post("http://127.0.0.1:5000/chat", {
-        message: input,
-      });
+      const res = await axios.post(
+        "http://127.0.0.1:5000/chat",
+        { message: input },
+        { headers: { "X-Clerk-User-Id": user.id } }
+      );
+      console.log(res)
       setResponse(res.data.response);
     } catch (error) {
       console.error("Error fetching response:", error);
       setResponse("Error fetching response.");
     }
   };
+  
 
   return (
     <div className="flex flex-1">
