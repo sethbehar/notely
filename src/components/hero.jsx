@@ -29,7 +29,7 @@ export function Hero() {
           Try It For Free Now
         </Badge>
         <h1 className="leading-5 mt-6 max-w-3xl text-4xl font-semibold tracking-tight text-gray-900 sm:text-6xl">
-          Study Smarter and Organized, with{" "}
+          Study Smart and Organized, with{" "}
           <span className="text-5xl font-playwrite">Notely</span>
         </h1>
         <p className="mt-4 max-w-xl text-lg text-gray-600">

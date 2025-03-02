@@ -37,7 +37,7 @@ export function Stats() {
       name: "Tyler Durden",
       designation: "Soap Developer",
       image:
-        "https://media.licdn.com/dms/image/v2/D4E03AQGax1nSkMoA2A/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1724369421965?e=1743033600&v=beta&t=ZOXOIFdvzyFwYa7-ZoCOvVf2tSjamTjj52vUhR3t7Bc",
+        "/headshots/seth.jpg",
     },
     {
       id: 6,

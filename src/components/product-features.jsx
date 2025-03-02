@@ -1,138 +1,115 @@
-import React from "react";
-import { useId } from "react";
+import { Book, Brain, Users, Zap } from "lucide-react";
+import Image from "next/image";
+
+const testimonials = [
+  {
+    quote:
+      "Notely has completely transformed how I study. It's intuitive, powerful, and has significantly improved my grades.",
+    author: "Sara Moss",
+    role: "Computer Science Student at Washington University in St. Louis", 
+    avatar: "/headshots/sara.jpg?height=60&width=60",
+  },
+  {
+    quote:
+      "As a medical student, organizing vast amounts of information is crucial. Notely makes this process effortless and enjoyable.",
+    author: "Ryan Sturisky",
+    role: "Medical Student at the University of Florida",
+    avatar: "/headshots/stu.jpg?height=60&width=60",
+  },
+  {
+    quote:
+      "The collaborative features in Notely have made group projects so much easier. It's a game-changer for team studying.",
+    author: "Eric Minsky",
+    role: "Finance Student at the University of Pennsylvania",
+    avatar: "/headshots/mink.jpg?height=60&width=60",
+  },
+];
+
+const features = [
+  {
+    icon: <Book className="h-8 w-8 text-emerald-500" />,
+    title: "Smart Organization",
+    description:
+      "Automatically categorize and tag your notes for easy retrieval.",
+  },
+  {
+    icon: <Brain className="h-8 w-8 text-emerald-500" />,
+    title: "AI-Powered Insights",
+    description: "Get intelligent summaries and study recommendations.",
+  },
+  {
+    icon: <Users className="h-8 w-8 text-emerald-500" />,
+    title: "Collaborative Study",
+    description: "Work together with classmates in real-time on shared notes.",
+  },
+  {
+    icon: <Zap className="h-8 w-8 text-emerald-500" />,
+    title: "Instant Sync",
+    description: "Access your notes across all devices, always up-to-date.",
+  },
+];
 
 export function ProductFeatures() {
   return (
-    <div className="flex flex-col items-center justify-center mt-16 mb-10 w-full">
-      <h1 className="font-poppins text-3xl font-semibold mb-8">
-        Our Cutting Edge Features
-      </h1>
-      <div className="pb-10 lg:pb-10 font-poppins">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 md:gap-2 max-w-7xl mx-auto">
-          {grid.map((feature) => (
-            <div
-              key={feature.title}
-              className="border border-gray-200 relative bg-gradient-to-b dark:from-neutral-900 from-neutral-100 dark:to-neutral-950 to-white p-6 rounded-3xl overflow-hidden"
-            >
-              <Grid size={20} />
-              <p className="text-base font-bold text-neutral-800 dark:text-white relative z-20">
+    <section className="font-poppins py-10 pb-24 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+        <h2 className="text-3xl font-semibold text-center text-gray-900 sm:text-4xl mb-12">
+          Powerful Features for Smarter Studying
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {features.map((feature, index) => (
+            <div key={index} className="flex flex-col items-center text-center">
+              <div className="bg-emerald-100 rounded-full p-3 mb-4">
+                {feature.icon}
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">
                 {feature.title}
-              </p>
-              <p className="text-neutral-600 dark:text-neutral-400 mt-4 text-base font-normal relative z-20">
-                {feature.description}
-              </p>
+              </h3>
+              <p className="text-gray-600">{feature.description}</p>
             </div>
           ))}
         </div>
       </div>
-    </div>
-  );
-}
-
-const grid = [
-  {
-    title: "HIPAA and SOC2 Compliant",
-    description:
-      "Our applications are HIPAA and SOC2 compliant, your data is safe with us, always.",
-  },
-  {
-    title: "Automated Social Media Posting",
-    description:
-      "Schedule and automate your social media posts across multiple platforms to save time and maintain a consistent online presence.",
-  },
-  {
-    title: "Advanced Analytics",
-    description:
-      "Gain insights into your social media performance with detailed analytics and reporting tools to measure engagement and ROI.",
-  },
-  {
-    title: "Content Calendar",
-    description:
-      "Plan and organize your social media content with an intuitive calendar view, ensuring you never miss a post.",
-  },
-  {
-    title: "Audience Targeting",
-    description:
-      "Reach the right audience with advanced targeting options, including demographics, interests, and behaviors.",
-  },
-  {
-    title: "Social Listening",
-    description:
-      "Monitor social media conversations and trends to stay informed about what your audience is saying and respond in real-time.",
-  },
-  {
-    title: "Customizable Templates",
-    description:
-      "Create stunning social media posts with our customizable templates, designed to fit your brand's unique style and voice.",
-  },
-  {
-    title: "Collaboration Tools",
-    description:
-      "Work seamlessly with your team using our collaboration tools, allowing you to assign tasks, share drafts, and provide feedback in real-time.",
-  },
-];
-
-export const Grid = ({ pattern, size }) => {
-  const p = pattern ?? [
-    [Math.floor(Math.random() * 4) + 7, Math.floor(Math.random() * 6) + 1],
-    [Math.floor(Math.random() * 4) + 7, Math.floor(Math.random() * 6) + 1],
-    [Math.floor(Math.random() * 4) + 7, Math.floor(Math.random() * 6) + 1],
-    [Math.floor(Math.random() * 4) + 7, Math.floor(Math.random() * 6) + 1],
-    [Math.floor(Math.random() * 4) + 7, Math.floor(Math.random() * 6) + 1],
-  ];
-  return (
-    <div className="pointer-events-none absolute left-1/2 top-0  -ml-20 -mt-2 h-full w-full [mask-image:linear-gradient(white,transparent)]">
-      <div className="absolute inset-0 bg-gradient-to-r  [mask-image:radial-gradient(farthest-side_at_top,white,transparent)] dark:from-zinc-900/30 from-zinc-100/30 to-zinc-300/30 dark:to-zinc-900/30 opacity-100">
-        <GridPattern
-          width={size ?? 20}
-          height={size ?? 20}
-          x="-12"
-          y="4"
-          squares={p}
-          className="absolute inset-0 h-full w-full  mix-blend-overlay dark:fill-white/10 dark:stroke-white/10 stroke-black/10 fill-black/10"
-        />
-      </div>
-    </div>
-  );
-};
-
-export function GridPattern({ width, height, x, y, squares, ...props }) {
-  const patternId = useId();
-
-  return (
-    <svg aria-hidden="true" {...props}>
-      <defs>
-        <pattern
-          id={patternId}
-          width={width}
-          height={height}
-          patternUnits="userSpaceOnUse"
-          x={x}
-          y={y}
-        >
-          <path d={`M.5 ${height}V.5H${width}`} fill="none" />
-        </pattern>
-      </defs>
-      <rect
-        width="100%"
-        height="100%"
-        strokeWidth={0}
-        fill={`url(#${patternId})`}
-      />
-      {squares && (
-        <svg x={x} y={y} className="overflow-visible">
-          {squares.map(([x, y], index) => (
-            <rect
-              strokeWidth="0"
-              key={`${x}-${y}-${index}`} // Use index to ensure a unique key
-              width={width + 1}
-              height={height + 1}
-              x={x * width}
-              y={y * height}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-center content-center ">
+          <div className="flex flex-col">
+            <Image
+              src="/demo.png"
+              alt="Product Features"
+              width={800}
+              height={500}
+              className="rounded-lg border-4 border-emerald-500 shadow-md"
             />
+            <p className="text-md align-center text-center text-gray-600 italic font-semibold mt-4 mb-20">Real Product Images</p>
+          </div>
+        </div>
+
+        <h2 className="text-3xl font-semibold text-center text-gray-900 sm:text-4xl mb-16">
+          What Our Users Say
+        </h2>
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+          {testimonials.map((testimonial, index) => (
+            <div key={index} className="bg-gray-50 rounded-lg p-6 border border-gray-200 shadow-md">
+              <p className="text-gray-600 italic mb-4">"{testimonial.quote}"</p>
+              <div className="flex items-center">
+                <Image
+                  src={testimonial.avatar || "/placeholder.svg"}
+                  alt={testimonial.author}
+                  width={60}
+                  height={60}
+                  className="rounded-full mr-4"
+                />
+                <div>
+                  <p className="font-semibold text-gray-900">
+                    {testimonial.author}
+                  </p>
+                  <p className="text-gray-600 text-sm">{testimonial.role}</p>
+                </div>
+              </div>
+            </div>
           ))}
-        </svg>
-      )}
-    </svg>
+        </div>
+      </div>
+    </section>
   );
 }
