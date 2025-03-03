@@ -15,10 +15,10 @@ const schools = [
 
 export function Scroll() {
   return (
-    <div className="w-full overflow-hidden bg-gray-50 py-6 flex flex-col items-center justify-center">
-      <h1 className='text-xl text-gray-600 font-semibold font-poppins mb-12'>
-        Used At Hundreds of Schools Like
-      </h1>
+    <div className="w-full overflow-hidden bg-gray-50 pb-24 flex flex-col items-center justify-center">
+       <h2 className="mt-16 text-3xl font-poppins font-semibold text-center text-gray-900 sm:text-4xl mb-16">
+          Used at Hundreds of Schools
+        </h2>
       <div className="flex animate-scroll">
         {[...schools, ...schools].map((school, index) => (
           <div key={index} className="flex-shrink-0 mx-8">

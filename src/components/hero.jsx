@@ -28,7 +28,7 @@ export function Hero() {
         <Badge className="bg-emerald-500 font-normal">
           Try It For Free Now
         </Badge>
-        <h1 className="leading-5 mt-6 max-w-3xl text-4xl font-semibold tracking-tight text-gray-900 sm:text-6xl">
+        <h1 className="leading-10 mt-6 max-w-3xl text-4xl font-semibold tracking-tight text-gray-900 sm:leading-none sm:text-6xl">
           Study Smart and Organized, with{" "}
           <span className="text-5xl font-playwrite">Notely</span>
         </h1>

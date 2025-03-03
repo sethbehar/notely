@@ -2,8 +2,9 @@ import { Navbar } from "@/components/navbar"
 import { Hero } from "@/components/hero"
 import { ProductFeatures } from "@/components/product-features"
 import { Scroll } from "@/components/scroll"
-import { AboutUs } from "@/components/aboutus"
 import { Footer } from "@/components/footer"
+import {FAQsection} from "@/components/faq-section";
+
 export default function Home() {
   return (
     (<div className="min-h-screen bg-white">
@@ -11,6 +12,7 @@ export default function Home() {
       <Hero />
       <ProductFeatures /> 
       <Scroll />
+      <FAQsection />
       <Footer
       />
     </div>)
