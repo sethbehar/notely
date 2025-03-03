@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import academicTerms from "./academicTerms"; // Default import from academicTerms.js
 import { jsPDF } from "jspdf";
+import { marked } from "marked";
+
 
 function Note() {
   const [title, setTitle] = useState(""); // <-- State for title
@@ -12,26 +14,39 @@ function Note() {
   const [cursorPosition, setCursorPosition] = useState({ top: 0, left: 0 });
   const editorRef = useRef(null);
   
-  // ---- SAVE AS PDF ----
-  const handleSaveAsPDF = () => {
-    // 2) Create a new jsPDF instance
-    const doc = new jsPDF();
+  // ---- SAVE AS PDF (with Markdown -> HTML) ----
+  const handleSaveAsPDF = async () => {
+    // Convert Markdown to HTML
+    const htmlContent = marked(content);
 
-    // Optional: set some styling or position
+    const doc = new jsPDF();
     doc.setFontSize(14);
 
-    // Draw the title
-    doc.text(title || "Untitled Note", 10, 20);
+    // Add the title (plain text)
+    doc.text(title || "Untitled Note", 10, 10);
 
-    // Add the content
-    //  - Increase the y-position for the content, so it doesn't overlap the title
-    //  - Use the text() maxWidth option to wrap text
-    doc.setFontSize(12);
-    doc.text(content, 10, 35, { maxWidth: 180 });
+    // We'll use doc.html() to render the HTML from markdown
+    // doc.html requires a DOM element as input:
+    const tempDiv = document.createElement("div");
+    // Prepend a heading for the content or just rely on doc.text for the title
+    tempDiv.innerHTML = htmlContent;
 
-    // 3) Save the PDF
-    const fileName = title ? `${title}.pdf` : "untitled.pdf";
-    doc.save(fileName);
+    // Add it to the DOM temporarily
+    document.body.appendChild(tempDiv);
+
+    // doc.html is async, so we use either a callback or await
+    await doc.html(tempDiv, {
+      x: 10,
+      y: 20,        // below the title
+      width: 180,   // line wrapping in mm
+      windowWidth: 900, // needed sometimes for proper layout
+      callback: (pdf) => {
+        pdf.save(title ? `${title}.pdf` : "untitled.pdf");
+      },
+    });
+
+    // Cleanup
+    document.body.removeChild(tempDiv);
   };
 
   // ---- AUTOCOMPLETE LOGIC BELOW ----
