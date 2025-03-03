@@ -9,13 +9,27 @@ import {
   IconUserBolt,
 } from "@tabler/icons-react";
 import { FaCircleUser } from "react-icons/fa6";
-
+import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 export default function SidebarDemo() {
+
+  const { user, isLoaded, isSignedIn } = useUser();
+  const [open, setOpen] = useState(false);
+
+  // If the user data hasn't loaded yet, you can render a loading indicator
+  if (!isLoaded) {
+    return <div className='flex justify-center items-center'>
+      <Image src='/loading.gif' width={100} height={75}/>
+    </div>;
+  }
+
+  // Set the username based on the available data, defaulting to "Guest" if not signed in
+  const userName = isSignedIn && user 
+    ? user.firstName || user.fullName || "User" 
+    : "Guest";
 
   const links = [
     {
@@ -47,7 +61,6 @@ export default function SidebarDemo() {
       ),
     },
   ];
-  const [open, setOpen] = useState(false);
   return (
     <div
       className={cn(
@@ -68,7 +81,7 @@ export default function SidebarDemo() {
           <div>
             <SidebarLink
               link={{
-                label: "Jacob Moss",
+                label: userName,
                 href: "#",
                 icon: (
                   <FaCircleUser className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
