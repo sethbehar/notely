@@ -1,19 +1,23 @@
 "use client";
-
+import { useUser } from "@clerk/nextjs";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import academicTerms from "./academicTerms"; // Default import from academicTerms.js
 import { jsPDF } from "jspdf";
 import { marked } from "marked";
+import axios from "axios";
 
 
 function Note() {
+  const { user, isLoaded, isSignedIn } = useUser();
   const [title, setTitle] = useState(""); // <-- State for title
   const [content, setContent] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [selectedSuggestion, setSelectedSuggestion] = useState(-1);
   const [cursorPosition, setCursorPosition] = useState({ top: 0, left: 0 });
   const editorRef = useRef(null);
-  
+  const [saveMessage, setSaveMessage] = useState("");
+
+
   // ---- SAVE AS PDF (with Markdown -> HTML) ----
   const handleSaveAsPDF = async () => {
     // Convert Markdown to HTML
@@ -180,9 +184,24 @@ function Note() {
   };
 
   // ---- SAVE & DISCARD ----
-  const handleSave = () => {
-    // In a real app, you'd send title & content to a server or store in localStorage
-    alert(`Saved!\nTitle: ${title}\nContent:\n${content}`);
+  const handleSave = async () => {
+    // Instead of just showing an alert, send the note to the backend
+    if (!isLoaded || !isSignedIn || !user) {
+      alert("You must be signed in to save notes.");
+      return;
+    }
+
+    try {
+      const res = await axios.post(
+        "http://127.0.0.1:5000/notes",
+        { title, content },
+        { headers: { "X-Clerk-User-Id": user.id } }
+      );
+      setSaveMessage("Note saved successfully!");
+    } catch (error) {
+      console.error("Error saving note:", error);
+      setSaveMessage("Failed to save note.");
+    }
   };
 
   const handleDiscard = () => {
