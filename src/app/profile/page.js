@@ -26,25 +26,14 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-gray-100 dark:bg-neutral-800 flex items-center justify-center p-4">
       <div className="bg-white dark:bg-neutral-900 shadow-lg rounded-lg p-6 max-w-md w-full">
         <div className="flex flex-col items-center">
-          {user.profileImageUrl ? (
-            <Image
-              src={user.profileImageUrl}
-              alt="Profile Picture"
-              width={100}
-              height={100}
-              className="rounded-full"
-            />
-          ) : (
-            <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center">
-              <span className="text-3xl text-white">U</span>
-            </div>
-          )}
+
+          <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center">
+            <span className="text-3xl text-white">{user.firstName[0] + user.lastName[0]}</span>
+          </div>
+
           <h2 className="mt-4 text-xl font-bold text-gray-900 dark:text-white">
-            {user.firstName || user.fullName || "User"}
+            {user.firstName + " " + user.lastName|| user.fullName || "User"}
           </h2>
-          {user.lastName && (
-            <p className="text-gray-600 dark:text-gray-300">{user.lastName}</p>
-          )}
           {user.primaryEmailAddress && (
             <p className="mt-2 text-gray-700 dark:text-gray-400">
               {user.primaryEmailAddress.emailAddress}
