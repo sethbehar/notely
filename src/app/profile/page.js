@@ -16,15 +16,18 @@ export default function ProfilePage() {
 
   if (!isSignedIn) {
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex justify-center items-center h-screen font-poppins">
         <p className="text-gray-700 dark:text-gray-300">Please sign in to view your profile.</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-neutral-800 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-neutral-900 shadow-lg rounded-lg p-6 max-w-md w-full">
+    <div className="min-h-screen bg-gray-100 dark:bg-neutral-800 flex items-center justify-center p-4 font-poppins" style={{
+      backgroundImage: "radial-gradient(#22c55e 2px, transparent 1px)",
+      backgroundSize: "30px 30px"
+    }}>
+      <div className="bg-white dark:bg-neutral-900 shadow-lg rounded-lg p-6 max-w-md w-full border-2 border-gray-200">
         <div className="flex flex-col items-center">
 
           <div className="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center">
@@ -41,7 +44,7 @@ export default function ProfilePage() {
           )}
         </div>
         <div className="mt-6 text-center">
-          <Link href="/test" className="text-blue-500 hover:underline">
+          <Link href="/test" className="text-emerald-500 hover:text-emerald-800">
             Back to Dashboard
           </Link>
         </div>

@@ -7,7 +7,7 @@ import { marked } from "marked";
 
 
 function Note() {
-  const [title, setTitle] = useState(""); // <-- State for title
+  const [title, setTitle] = useState(""); 
   const [content, setContent] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [selectedSuggestion, setSelectedSuggestion] = useState(-1);
