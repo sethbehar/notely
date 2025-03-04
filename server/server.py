@@ -21,20 +21,7 @@ mongo_client = MongoClient(os.getenv("MONGO_URI"))
 
 db = mongo_client.chat_history  # database name
 conversations = db.conversations  # collection name
-
-conversation = {
-    "user_id": "test-user",
-    "conversation_id": str(ObjectId()),
-    "user_message": "Hello",
-    "ai_response": "Hi there!",
-    "timestamp": datetime.now()
-}
-
-try:
-    result = conversations.insert_one(conversation)
-    print("Inserted document id:", result.inserted_id)
-except Exception as e:
-    print("Insert failed:", e)
+notes = db.notes
 
 @app.route("/chat", methods=["POST"])
 def chat():
@@ -137,6 +124,34 @@ def delete_conversation(conversation_id):
         if result.deleted_count > 0:
             return jsonify({"message": f"Deleted {result.deleted_count} messages"})
         return jsonify({"error": "Conversation not found"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@app.route("/notes", methods=["POST"])
+def create_note():
+    # Extract the Clerk user ID from the request headers
+    clerk_user_id = request.headers.get("X-Clerk-User-Id")
+    if not clerk_user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    data = request.get_json()
+    title = data.get("title", "")
+    content = data.get("content", "")
+
+    # Build the note document
+    note = {
+        "user_id": clerk_user_id,
+        "title": title,
+        "content": content,
+        "timestamp": datetime.now()
+    }
+
+    try:
+        # Insert the note into the "notes" collection
+        result = notes.insert_one(note)
+        # Convert the inserted ObjectId to string before returning to client
+        note["_id"] = str(result.inserted_id)
+        return jsonify(note), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
