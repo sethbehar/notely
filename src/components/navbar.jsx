@@ -20,17 +20,17 @@ export function Navbar() {
           <h1>Notely</h1>
         </Link>
         <div className="hidden gap-6 md:flex">
-          <Link href="/test" className="text-sm text-gray-600 hover:text-gray-900">
+          <Link href="/dashboard" className="text-sm text-gray-600 hover:text-gray-900">
             Dashboard
           </Link>
-          <Link href="#" className="text-sm text-gray-600 hover:text-gray-900">
+          <Link href="#features" className="text-sm text-gray-600 hover:text-gray-900">
             Features
           </Link>
           <Link href="#" className="text-sm text-gray-600 hover:text-gray-900">
-            Blog
+            Demo
           </Link>
-          <Link href="#" className="text-sm text-gray-600 hover:text-gray-900">
-            About Us
+          <Link href="#faq" className="text-sm text-gray-600 hover:text-gray-900">
+            FAQ
           </Link>
         </div>
         <div className="flex items-center justify-center gap-2">

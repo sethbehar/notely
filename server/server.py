@@ -89,7 +89,6 @@ def get_conversations():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
 @app.route("/conversation/<conversation_id>", methods=["GET"])
 def get_conversation(conversation_id):
     clerk_user_id = request.headers.get("X-Clerk-User-Id")
