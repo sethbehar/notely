@@ -5,7 +5,9 @@ import academicTerms from "./academicTerms"; // Default import from academicTerm
 import { jsPDF } from "jspdf";
 import { marked } from "marked";
 import axios from "axios";
-
+import {
+  IconNotes
+} from "@tabler/icons-react";
 
 function Note() {
   const { user, isLoaded, isSignedIn } = useUser();
@@ -211,8 +213,13 @@ function Note() {
   };
 
   return (
-    <div className="flex flex-col p-16 font-poppins gap-4">
-      {/* Title Field */}
+    <div className="flex flex-col p-4 font-poppins gap-4">
+            <div className="flex items-center">
+              <IconNotes className="h-4 w-4 text-gray-500 dark:text-gray-400 mr-2" />
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                Create Note
+              </h3>
+            </div>
       <input
         type="text"
         className="border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"

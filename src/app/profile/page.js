@@ -44,7 +44,7 @@ export default function ProfilePage() {
           )}
         </div>
         <div className="mt-6 text-center">
-          <Link href="/test" className="text-emerald-500 hover:text-emerald-800">
+          <Link href="/dashboard" className="text-emerald-500 hover:text-emerald-800">
             Back to Dashboard
           </Link>
         </div>
