@@ -154,6 +154,26 @@ def create_note():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route("/notes", methods=["GET"])
+def get_notes():
+    # Retrieve the Clerk user id from the headers
+    clerk_user_id = request.headers.get("X-Clerk-User-Id")
+    if not clerk_user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    try:
+        # Find notes for the authenticated user, sorted by timestamp (newest first)
+        ns = list(notes.find({"user_id": clerk_user_id}).sort("timestamp", -1))
+        
+        # Convert ObjectId to string for each note
+        for note in ns:
+            note["_id"] = str(note["_id"])
+        
+        return jsonify(ns), 200  # Return the list of notes, not the collection
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

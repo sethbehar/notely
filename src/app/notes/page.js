@@ -6,22 +6,22 @@ import Image from "next/image";
 
 export default function Notes() {
   const { user, isLoaded, isSignedIn } = useUser();
-  const [conversations, setConversations] = useState([]);
+  const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     if (isLoaded && isSignedIn && user) {
       axios
-        .get("http://127.0.0.1:5000/conversations", {
+        .get("http://127.0.0.1:5000/notes", {  // ensure this endpoint matches your Flask route
           headers: { "X-Clerk-User-Id": user.id }
         })
         .then((res) => {
-          setConversations(res.data);
+          setNotes(res.data);
           setLoading(false);
         })
         .catch((err) => {
-          console.error("Error fetching conversations:", err);
+          console.error("Error fetching notes:", err);
           setError("Failed to load notes");
           setLoading(false);
         });
@@ -57,29 +57,18 @@ export default function Notes() {
       <h1 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
         My Notes
       </h1>
-      {conversations.length === 0 ? (
+      {notes.length === 0 ? (
         <p className="text-gray-700 dark:text-gray-300">
           No notes available. Start a conversation to create a note!
         </p>
       ) : (
         <div className="space-y-4">
-          {conversations.map((conv) => (
-            <div
-              key={conv._id}
-              className="p-4 bg-white dark:bg-neutral-900 border rounded-lg shadow-sm"
-            >
-              <p className="text-sm text-gray-500">
-                <strong>Conversation ID:</strong> {conv.conversation_id}
-              </p>
-              <p className="mt-2">
-                <strong>User Message:</strong> {conv.user_message}
-              </p>
-              <p className="mt-2">
-                <strong>AI Response:</strong> {conv.ai_response}
-              </p>
-              <p className="mt-2 text-xs text-gray-400">
-                {new Date(conv.timestamp).toLocaleString()}
-              </p>
+          {notes.map((note) => (
+            <div key={note._id} className="p-4 bg-white rounded shadow">
+              <p className="text-gray-800">{note.content}</p>
+              <small className="text-gray-500">
+                {new Date(note.timestamp).toLocaleString()}
+              </small>
             </div>
           ))}
         </div>
