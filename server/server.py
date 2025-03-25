@@ -7,25 +7,21 @@ from pymongo import MongoClient
 from bson import ObjectId
 from datetime import datetime
 
-# Load environment variables
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)  # Allows frontend to call this API
+CORS(app)  
 
-# Initialize HuggingFace client
 hf_client = InferenceClient(api_key=os.getenv("MOSS_KEY"))
 
-# Initialize MongoDB client
 mongo_client = MongoClient(os.getenv("MONGO_URI"))
 
-db = mongo_client.chat_history  # database name
-conversations = db.conversations  # collection name
+db = mongo_client.chat_history 
+conversations = db.conversations  
 notes = db.notes
 
 @app.route("/chat", methods=["POST"])
 def chat():
-    # Extract the Clerk user ID from the request headers
     clerk_user_id = request.headers.get("X-Clerk-User-Id")
     if not clerk_user_id:
         return jsonify({"error": "Unauthorized"}), 401
@@ -39,7 +35,6 @@ def chat():
     ]
 
     try:
-        # Get AI response from HuggingFace
         print("Here")
         completion = hf_client.chat.completions.create(
             model="meta-llama/Meta-Llama-3-8B-Instruct", 
@@ -49,9 +44,8 @@ def chat():
         ai_response = completion.choices[0].message["content"]
         print(ai_response)
         
-        # Build the conversation document including the Clerk user ID
         conversation = {
-            "user_id": clerk_user_id,       # Associate conversation with this user
+            "user_id": clerk_user_id,      
             "conversation_id": conversation_id,
             "user_message": user_message,
             "ai_response": ai_response,
@@ -59,7 +53,6 @@ def chat():
         }
         
         print("Conversation doc:", conversation) 
-        # Save the conversation to MongoDB
         conversations.insert_one(conversation)
         
         return jsonify({
@@ -76,12 +69,10 @@ def get_conversations():
         return jsonify({"error": "Unauthorized"}), 401
 
     try:
-        # Get all conversations for the current user, sorted by timestamp
         user_conversations = list(conversations.find(
             {"user_id": clerk_user_id}
         ).sort("timestamp", -1))
         
-        # Convert MongoDB ObjectIDs to strings for the client
         for convo in user_conversations:
             convo["_id"] = str(convo["_id"])
             
@@ -96,7 +87,6 @@ def get_conversation(conversation_id):
         return jsonify({"error": "Unauthorized"}), 401
 
     try:
-        # Get all messages in a specific conversation that belong to this user
         conversation_messages = list(conversations.find(
             {"conversation_id": conversation_id, "user_id": clerk_user_id},
             {'_id': {'$toString': '$_id'}}
@@ -128,7 +118,6 @@ def delete_conversation(conversation_id):
     
 @app.route("/notes", methods=["POST"])
 def create_note():
-    # Extract the Clerk user ID from the request headers
     clerk_user_id = request.headers.get("X-Clerk-User-Id")
     if not clerk_user_id:
         return jsonify({"error": "Unauthorized"}), 401
@@ -137,7 +126,6 @@ def create_note():
     title = data.get("title", "")
     content = data.get("content", "")
 
-    # Build the note document
     note = {
         "user_id": clerk_user_id,
         "title": title,
@@ -146,9 +134,7 @@ def create_note():
     }
 
     try:
-        # Insert the note into the "notes" collection
         result = notes.insert_one(note)
-        # Convert the inserted ObjectId to string before returning to client
         note["_id"] = str(result.inserted_id)
         return jsonify(note), 201
     except Exception as e:
@@ -156,20 +142,17 @@ def create_note():
 
 @app.route("/notes", methods=["GET"])
 def get_notes():
-    # Retrieve the Clerk user id from the headers
     clerk_user_id = request.headers.get("X-Clerk-User-Id")
     if not clerk_user_id:
         return jsonify({"error": "Unauthorized"}), 401
 
     try:
-        # Find notes for the authenticated user, sorted by timestamp (newest first)
         ns = list(notes.find({"user_id": clerk_user_id}).sort("timestamp", -1))
         
-        # Convert ObjectId to string for each note
         for note in ns:
             note["_id"] = str(note["_id"])
         
-        return jsonify(ns), 200  # Return the list of notes, not the collection
+        return jsonify(ns), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

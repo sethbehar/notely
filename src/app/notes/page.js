@@ -13,7 +13,7 @@ export default function Notes() {
   useEffect(() => {
     if (isLoaded && isSignedIn && user) {
       axios
-        .get("http://127.0.0.1:5000/notes", {  // ensure this endpoint matches your Flask route
+        .get("http://127.0.0.1:5000/notes", {
           headers: { "X-Clerk-User-Id": user.id }
         })
         .then((res) => {
