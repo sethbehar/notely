@@ -291,7 +291,7 @@ const Dashboard = ({ userName, input, setInput, response, handleSend }) => {
                   Import text from PDF documents.
                 </p>
                 <button className="text-sm font-medium text-purple-600 dark:text-purple-400 hover:text-purple-700 transition-all hover:underline dark:hover:text-purple-300">
-                  Upload PDF →
+                  <a href="/upload">Upload PDF →</a>
                 </button>
               </div>
             </div>
