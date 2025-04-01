@@ -14,11 +14,15 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)  
 
+print("MONGO_URI:", os.getenv("MONGO_URI"))
 hf_client = InferenceClient(api_key=os.getenv("MOSS_KEY"))
 
 mongo_client = MongoClient(os.getenv("MONGO_URI"))
 
 db = mongo_client.chat_history 
+
+print(db)
+
 conversations = db.conversations  
 notes = db.notes
 flashcards = db.flashcards

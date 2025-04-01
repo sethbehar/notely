@@ -139,7 +139,7 @@ export default function SidebarDemo() {
       )}
     >
       <Sidebar open={open} setOpen={setOpen}>
-        <SidebarBody className="justify-between gap-10">
+        <SidebarBody className="justify-between gap-10 border-r">
           <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
             {open ? <Logo /> : <LogoIcon />}
             <div className="mt-8 flex flex-col gap-2">
@@ -195,8 +195,8 @@ export const LogoIcon = () => {
       href="#"
       className="font-normal flex space-x-2 items-center text-sm text-black py-1 relative z-20"
     >
-      <div className="h-5 w-6 flex items-center justify-center font-semibold font-playwrite text-xl">
-        <p className="p-8">N</p>
+      <div className="h-5 w-6 flex items-center justify-center font-semibold font-playwrite text-lg">
+        <p className="">N</p>
       </div>
     </Link>
   );
@@ -221,8 +221,8 @@ const Dashboard = ({ userName, input, setInput, response, handleSend }) => {
   }
 
   return (
-    <div className="flex flex-1 overflow-auto">
-      <div className="p-2 md:p-6 rounded-tl-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex flex-col gap-4 flex-1 w-full h-full">
+    <div className="flex flex-1 overflow-auto bg-white">
+      <div className="p-2 md:p-6  border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 flex flex-col gap-4 flex-1 w-full h-full">
         <div className="bg-emerald-100 dark:bg-emerald-900/20 rounded-lg mx-4 p-6">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
             Hello, {userName}! 👋
@@ -278,7 +278,7 @@ const Dashboard = ({ userName, input, setInput, response, handleSend }) => {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-neutral-800 rounded-lg p-4 dark:border-neutral-700">
+          <div className="bg-white dark:bg-neutral-800 rounded-lg  p-4 dark:border-neutral-700">
             <div className="flex items-start border-2 border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
               <div className="bg-purple-100 dark:bg-purple-900/50 rounded-full p-2 mr-3">
                 <IconUpload className="h-5 w-5 text-purple-600 dark:text-purple-400" />
@@ -313,7 +313,7 @@ const Dashboard = ({ userName, input, setInput, response, handleSend }) => {
               View All
             </Link>
           </div>
-          <div>
+          <div className="">
             {recentNotes.map((note) => (
               <div
                 key={note.id}
@@ -340,13 +340,13 @@ const Dashboard = ({ userName, input, setInput, response, handleSend }) => {
               </div>
             ))}
           </div>
-          {showNote && (
-          <div className="mt-8 pb-8">
+          
+        </div>
+        {showNote && (
+          <div className="mt-8 pb-8 bg-white">
             <Note />
           </div>
         )}
-        </div>
-        
       </div>
     </div>
   );

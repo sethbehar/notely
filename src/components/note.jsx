@@ -5,9 +5,8 @@ import academicTerms from "./academicTerms"; // Default import from academicTerm
 import { jsPDF } from "jspdf";
 import { marked } from "marked";
 import axios from "axios";
-import {
-  IconNotes
-} from "@tabler/icons-react";
+import { IconNotes } from "@tabler/icons-react";
+import { useToast } from "@/hooks/use-toast";
 
 function Note() {
   const { user, isLoaded, isSignedIn } = useUser();
@@ -18,7 +17,6 @@ function Note() {
   const [cursorPosition, setCursorPosition] = useState({ top: 0, left: 0 });
   const editorRef = useRef(null);
   const [saveMessage, setSaveMessage] = useState("");
-
 
   // ---- SAVE AS PDF (with Markdown -> HTML) ----
   const handleSaveAsPDF = async () => {
@@ -43,8 +41,8 @@ function Note() {
     // doc.html is async, so we use either a callback or await
     await doc.html(tempDiv, {
       x: 10,
-      y: 20,        // below the title
-      width: 180,   // line wrapping in mm
+      y: 20, // below the title
+      width: 180, // line wrapping in mm
       windowWidth: 900, // needed sometimes for proper layout
       callback: (pdf) => {
         pdf.save(title ? `${title}.pdf` : "untitled.pdf");
@@ -136,7 +134,6 @@ function Note() {
     setContent(newContent);
     setSuggestions([]);
 
-    // Reposition cursor
     setTimeout(() => {
       if (editorRef.current) {
         const newCursorPos = newTextBeforeCursor.length;
@@ -147,7 +144,6 @@ function Note() {
     }, 0);
   };
 
-  // ---- TOOLBAR ACTIONS (BOLD, ITALIC) ----
   const applyTextFormat = (formatType) => {
     if (!editorRef.current) return;
 
@@ -212,99 +208,106 @@ function Note() {
     setContent("");
   };
 
+  const { toast } = useToast();
+
   return (
-    <div className="flex flex-col p-4 font-poppins gap-4">
-            <div className="flex items-center">
-              <IconNotes className="h-4 w-4 text-gray-500 dark:text-gray-400 mr-2" />
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                Create Note
-              </h3>
-            </div>
-      <input
-        type="text"
-        className="border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
-        placeholder="Enter note title..."
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-      />
-
-      {/* Toolbar for Bold/Italic */}
-      <div className="flex items-center gap-2">
-        <button
-          type="button"
-          className="px-3 py-1 border rounded-md hover:bg-gray-100"
-          onClick={() => applyTextFormat("bold")}
-        >
-          Bold
-        </button>
-        <button
-          type="button"
-          className="px-3 py-1 border rounded-md hover:bg-gray-100"
-          onClick={() => applyTextFormat("italic")}
-        >
-          Italic
-        </button>
-      </div>
-
-      {/* Text Editor */}
-      <div className="relative">
-        <textarea
-          ref={editorRef}
-          className="w-full min-h-[200px] p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
-          placeholder="Start typing your note here..."
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          onKeyDown={handleKeyDown}
+    <div className="bg-white dark:bg-neutral-800 rounded-lg shadow border mx-4 border-gray-100 dark:border-neutral-700 mb-6">
+      <div className="flex flex-col p-4 font-poppins gap-4 text-sm">
+        <div className="flex items-center">
+          <IconNotes className="h-4 w-4 text-gray-500 dark:text-gray-400 mr-2" />
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+            Create Note
+          </h3>
+        </div>
+        <input
+          type="text"
+          className="border border-gray-300 p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          placeholder="Enter note title..."
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
         />
 
-        {suggestions.length > 0 && (
-          <div
-            className="absolute bg-white shadow-lg rounded-md border border-gray-200 z-10 max-w-xs"
-            style={{
-              top: `${cursorPosition.top + 30}px`,
-              left: `${Math.min(cursorPosition.left, 300)}px`,
+        {/* Toolbar for Bold/Italic */}
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            className="px-3 py-1 border rounded-md hover:bg-gray-100"
+            onClick={() => applyTextFormat("bold")}
+          >
+            Bold
+          </button>
+          <button
+            type="button"
+            className="px-3 py-1 border rounded-md hover:bg-gray-100"
+            onClick={() => applyTextFormat("italic")}
+          >
+            Italic
+          </button>
+        </div>
+
+        {/* Text Editor */}
+        <div className="relative">
+          <textarea
+            ref={editorRef}
+            className="w-full min-h-[200px] p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            placeholder="Start typing your note here..."
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            onKeyDown={handleKeyDown}
+          />
+
+          {suggestions.length > 0 && (
+            <div
+              className="absolute bg-white shadow-lg rounded-md border border-gray-200 z-10 max-w-xs"
+              style={{
+                top: `${cursorPosition.top + 30}px`,
+                left: `${Math.min(cursorPosition.left, 300)}px`,
+              }}
+            >
+              <ul>
+                {suggestions.map((suggestion, index) => (
+                  <li
+                    key={index}
+                    className={`px-3 py-1 cursor-pointer hover:bg-gray-100 ${
+                      index === selectedSuggestion ? "bg-emerald-100" : ""
+                    }`}
+                    onClick={() => applySuggestion(suggestion)}
+                  >
+                    {suggestion}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+
+        {/* Save & Discard Buttons */}
+        <div className="flex gap-4 mt-2">
+          <button
+            type="button"
+            className="px-4 py-2 bg-emerald-500 text-white rounded-md hover:bg-emerald-600"
+            onClick={async () => {
+              await handleSave();
+              toast({ title: "Note saved successfully!" });
             }}
           >
-            <ul>
-              {suggestions.map((suggestion, index) => (
-                <li
-                  key={index}
-                  className={`px-3 py-1 cursor-pointer hover:bg-gray-100 ${
-                    index === selectedSuggestion ? "bg-emerald-100" : ""
-                  }`}
-                  onClick={() => applySuggestion(suggestion)}
-                >
-                  {suggestion}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
-
-      {/* Save & Discard Buttons */}
-      <div className="flex gap-4 mt-2">
-        <button
-          type="button"
-          className="px-4 py-2 bg-emerald-500 text-white rounded-md hover:bg-emerald-600"
-          onClick={handleSave}
-        >
-          Save
-        </button>
-        <button
-          type="button"
-          className="px-4 py-2 border border-red-500 text-red-500 rounded-md hover:bg-red-50"
-          onClick={handleDiscard}
-        >
-          Discard
-        </button>
-        <button
-          type="button"
-          className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-          onClick={handleSaveAsPDF}
-        >
-          Save as PDF
-        </button>
+            Save
+          </button>
+          <button
+            type="button"
+            className="px-4 py-2 border border-red-500 text-red-500 rounded-md hover:bg-red-50"
+            onClick={handleDiscard}
+          >
+            Discard
+          </button>
+          <button
+            type="button"
+            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+            onClick={handleSaveAsPDF}
+          >
+            Save as PDF
+          </button>
+        </div>
       </div>
     </div>
   );
