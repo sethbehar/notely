@@ -65,7 +65,7 @@ export default function Notes() {
         <div className="space-y-4">
           {notes.map((note) => (
             <div key={note._id} className="p-4 bg-white rounded shadow">
-              <p className="text-gray-800">{note.content}</p>
+              <p className="text-gray-800">{note.title}</p>
               <small className="text-gray-500">
                 {new Date(note.timestamp).toLocaleString()}
               </small>

@@ -1,6 +1,8 @@
 from huggingface_hub import InferenceClient
 from dotenv import load_dotenv
 import os
+import json
+import re 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from pymongo import MongoClient
@@ -19,6 +21,8 @@ mongo_client = MongoClient(os.getenv("MONGO_URI"))
 db = mongo_client.chat_history 
 conversations = db.conversations  
 notes = db.notes
+flashcards = db.flashcards
+quizzes = db.quizzes
 
 @app.route("/chat", methods=["POST"])
 def chat():
@@ -156,6 +160,102 @@ def get_notes():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# --- Endpoint to Generate Flashcards from a Specific Note ---
+
+@app.route("/notes/<note_id>/flashcards", methods=["POST"])
+def generate_flashcards(note_id):
+    clerk_user_id = request.headers.get("X-Clerk-User-Id")
+    if not clerk_user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    # Retrieve the note from the db
+    try:
+        note = notes.find_one({"_id": ObjectId(note_id), "user_id": clerk_user_id})
+    except Exception as e:
+        return jsonify({"error": "Invalid note ID"}), 400
+
+    if not note:
+        return jsonify({"error": "Note not found"}), 404
+
+    note_content = note.get("content", "")
+    note_title = note.get("title", "Note")
+
+    prompt = (
+        f"Generate flashcards for the following note content in JSON format. "
+        f"The JSON should be an array of objects, each with a 'question' and an 'answer'. "
+        f"Note content: {note_content}"
+    )
+    messages = [{"role": "user", "content": prompt}]
+
+    try:
+        completion = hf_client.chat.completions.create(
+            model="meta-llama/Meta-Llama-3-8B-Instruct",
+            messages=messages,
+            max_tokens=500
+        )
+        ai_response = completion.choices[0].message["content"]
+
+        # Extract JSON from the response
+        match = re.search(r"```(.*?)```", ai_response, re.DOTALL)
+        if match:
+            json_str = match.group(1).strip()
+        else:
+            json_str = ai_response.strip()
+
+        try:
+            flashcards_list = json.loads(json_str)
+        except Exception as parse_error:
+            return jsonify({
+                "error": "Failed to parse LLM response as JSON",
+                "details": str(parse_error),
+                "raw_response": ai_response
+            }), 500
+
+
+        flashcard_doc = {
+            "user_id": clerk_user_id,
+            "note_id": note_id,
+            "title": f"Flashcards for {note_title}",
+            "flashcards": flashcards_list,
+            "timestamp": datetime.now()
+        }
+
+        result = flashcards.insert_one(flashcard_doc)
+        flashcard_doc["_id"] = str(result.inserted_id)
+        return jsonify(flashcard_doc), 201
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+# --- Existing Endpoints for Flashcards  ---
+
+@app.route("/flashcards", methods=["GET"])
+def get_flashcards():
+    clerk_user_id = request.headers.get("X-Clerk-User-Id")
+    if not clerk_user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    try:
+        flashcard_docs = list(flashcards.find({"user_id": clerk_user_id}).sort("timestamp", -1))
+        for fc in flashcard_docs:
+            fc["_id"] = str(fc["_id"])
+        return jsonify(flashcard_docs), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/flashcards/<flashcard_id>", methods=["GET"])
+def get_flashcard(flashcard_id):
+    clerk_user_id = request.headers.get("X-Clerk-User-Id")
+    if not clerk_user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+    try:
+        flashcard_doc = flashcards.find_one({"_id": ObjectId(flashcard_id), "user_id": clerk_user_id})
+        if not flashcard_doc:
+            return jsonify({"error": "Flashcard not found"}), 404
+        flashcard_doc["_id"] = str(flashcard_doc["_id"])
+        return jsonify(flashcard_doc), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":
