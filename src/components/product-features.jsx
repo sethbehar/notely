@@ -72,16 +72,21 @@ export function ProductFeatures() {
       </div>
       <div className="">
         <div className="flex justify-center content-center border-b border-gray-200">
-          <div className="flex flex-col mt-16">
-            <Image
-              src="/demo.png"
-              alt="Product Features"
-              width={800}
-              height={500}
-              className="rounded-lg border border-gray-200 shadow-md"
-            />
-            <p className="text-md align-center text-center text-gray-600 italic font-semibold mt-4 mb-16">
-              Real Product Images
+          <div className="flex flex-col mt-16 w-full max-w-4xl mx-auto">
+            <div className="relative pb-[56.25%]">
+              <section id="demo">
+                <iframe
+                  src="https://www.youtube.com/embed/bYolDV4U--Y"
+                  title="YouTube video player"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="absolute top-0 left-0 w-full h-full rounded-lg shadow-lg"
+                />
+              </section>
+            </div>
+            <p className="text-md text-center text-gray-600 italic font-semibold mt-4 mb-16">
+              Notely Demo
             </p>
           </div>
         </div>

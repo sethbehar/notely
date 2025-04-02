@@ -211,7 +211,7 @@ function Note() {
   const { toast } = useToast();
 
   return (
-    <div className="bg-white dark:bg-neutral-800 rounded-lg shadow border mx-4 border-gray-100 dark:border-neutral-700 mb-6">
+    <div className="bg-white dark:bg-neutral-800 rounded-lg border-2 mx-4 border-gray-200 dark:border-neutral-700 mb-6">
       <div className="flex flex-col p-4 font-poppins gap-4 text-sm">
         <div className="flex items-center">
           <IconNotes className="h-4 w-4 text-gray-500 dark:text-gray-400 mr-2" />

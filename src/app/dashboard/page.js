@@ -23,7 +23,6 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import Note from "@/components/note";
 
-// Mock data for recent notes
 const recentNotes = [
   {
     id: 1,
@@ -135,7 +134,7 @@ export default function SidebarDemo() {
     <div
       className={cn(
         "font-poppins font-semibold rounded-md flex flex-col md:flex-row bg-gray-100 dark:bg-neutral-800 min-w-full w-full flex-1 max-w-7xl mx-auto border border-neutral-200 dark:border-neutral-700 overflow-hidden",
-        "h-screen"
+        "min-h-screen"
       )}
     >
       <Sidebar open={open} setOpen={setOpen}>
@@ -204,7 +203,7 @@ export const LogoIcon = () => {
 
 const Dashboard = ({ userName, input, setInput, response, handleSend }) => {
   const { isLoaded, isSignedIn } = useUser();
-  
+
   // 1) Add state to track whether the Note component is visible
   const [showNote, setShowNote] = useState(false);
 
@@ -231,9 +230,7 @@ const Dashboard = ({ userName, input, setInput, response, handleSend }) => {
             Welcome to your Notely dashboard. What would you like to do today?
           </p>
         </div>
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          {/* 2) Replace the Link with a button that toggles showNote */}
           <div className="bg-white dark:bg-neutral-800 rounded-lg p-4 dark:border-neutral-700">
             <div className="flex items-start border-2 border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
               <div className="bg-emerald-100 dark:bg-emerald-900/50 rounded-full p-2 mr-3">
@@ -297,9 +294,11 @@ const Dashboard = ({ userName, input, setInput, response, handleSend }) => {
             </div>
           </div>
         </div>
-
-        <div className="bg-white dark:bg-neutral-800 rounded-lg shadow border mx-4 border-gray-100 dark:border-neutral-700 mb-6">
-          <div className="px-4 py-3 border-b border-gray-200 dark:border-neutral-700 flex justify-between items-center">
+        <div className="pb-4 bg-white">
+          <Note />
+        </div>
+        <div className="bg-white dark:bg-neutral-800 rounded-lg border-2 mx-4 border-gray-200 dark:border-neutral-700 mb-8">
+          <div className="px-4 py-4 border-b border-gray-200 dark:border-neutral-700 flex justify-between items-center">
             <div className="flex items-center">
               <IconClock className="h-4 w-4 text-gray-500 dark:text-gray-400 mr-2" />
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
@@ -317,7 +316,7 @@ const Dashboard = ({ userName, input, setInput, response, handleSend }) => {
             {recentNotes.map((note) => (
               <div
                 key={note.id}
-                className="px-4 py-3 border-b border-gray-200 dark:border-neutral-700 last:border-0 hover:bg-gray-50 dark:hover:bg-neutral-700/50 transition-colors"
+                className="px-4 py-4 border-b border-gray-200 dark:border-neutral-700 last:border-0 hover:bg-gray-50 dark:hover:bg-neutral-700/50 transition-colors"
               >
                 <div className="flex justify-between items-center">
                   <div>
@@ -340,13 +339,7 @@ const Dashboard = ({ userName, input, setInput, response, handleSend }) => {
               </div>
             ))}
           </div>
-          
         </div>
-        {showNote && (
-          <div className="mt-8 pb-8 bg-white">
-            <Note />
-          </div>
-        )}
       </div>
     </div>
   );

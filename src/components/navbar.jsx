@@ -26,14 +26,14 @@ export function Navbar() {
           <Link href="#features" className="text-sm text-gray-600 hover:text-gray-900">
             Features
           </Link>
-          <Link href="#" className="text-sm text-gray-600 hover:text-gray-900">
+          <Link href="#demo" className="text-sm text-gray-600 hover:text-gray-900">
             Demo
           </Link>
           <Link href="#faq" className="text-sm text-gray-600 hover:text-gray-900">
             FAQ
           </Link>
         </div>
-        <div className="flex items-center justify-center gap-2">
+        <div className="flex items-center justify-center gap-2 text-gray-800 hover:text-emerald-500 transition-colors duration-200">
           <SignedOut>
           <SignInButton />
           </SignedOut>
