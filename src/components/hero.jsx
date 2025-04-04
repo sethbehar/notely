@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Stats } from "./stats.jsx";
 
 export function Hero() {
+
   return (
     <section className="font-poppins relative min-h-[600px] overflow-hidden md:p-20 p-20 bg-white">
       <div className="absolute inset-0 z-0">
@@ -29,19 +30,18 @@ export function Hero() {
           Try It For Free Now
         </Badge>
         <h1 className="leading-10 mt-6 max-w-3xl text-4xl font-semibold tracking-tight text-gray-900 sm:leading-none sm:text-6xl">
-          Study Smart and Organized, with{" "}
-          <span className="text-5xl font-playwrite">Notely</span>
+          Ace Your Studies — The Smart Way with {" "}
+          <span className="sm:text-5xl text-3xl font-playwrite">Notely</span>
         </h1>
         <p className="mt-4 max-w-xl text-lg text-gray-600">
-          Let's make your notes more organized and easily using the Learnly.
-          Organized to study harder than ever before.
+        Generate quizzes and flashcards on the fly using Notely's powerful AI learning technology.
         </p>
         <div className="mt-8 flex gap-4">
           <Button size="lg" className="bg-emerald-500 hover:bg-emerald-600">
             Sign Up
           </Button>
           <Button size="lg" variant="outline" className="hover:bg-gray-200 transition-all">
-            View Demo
+            <a href="#demo">View Demo</a>
           </Button>
         </div>
         <Stats />

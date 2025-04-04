@@ -110,3 +110,19 @@ body {
   background-size: 30px 30px; /* Adjust the size of the stars */
   background-position: 0 0, 10px 10px; /* Offset for repeating effect */
 }
+
+.flip-card-inner {
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+.flip-card-inner.flipped {
+  transform: rotateY(180deg);
+}
+.flip-card-front,
+.flip-card-back {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.flip-card-back {
+  transform: rotateY(180deg);
+}

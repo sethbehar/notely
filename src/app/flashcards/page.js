@@ -16,6 +16,47 @@ import {
 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 
+function FlippableCard({ question, answer }) {
+  const [isFlipped, setIsFlipped] = useState(false);
+  return (
+    <div
+      className="relative w-full h-72 cursor-pointer"
+      style={{ perspective: "1000px" }}
+      onClick={() => setIsFlipped((prev) => !prev)}
+    >
+      <div
+        className="absolute w-full h-full transition-transform duration-500"
+        style={{
+          transformStyle: "preserve-3d",
+          transform: isFlipped ? "rotateY(180deg)" : "none",
+        }}
+      >
+        {/* Front side: Question */}
+        <div
+          className="absolute w-full h-full flex items-center justify-center p-4 border rounded-md bg-gray-100 dark:bg-neutral-700"
+          style={{
+            backfaceVisibility: "hidden",
+            WebkitBackfaceVisibility: "hidden",
+          }}
+        >
+          <p className="text-lg font-medium text-center">{question}</p>
+        </div>
+        {/* Back side: Answer */}
+        <div
+          className="absolute w-full h-full flex items-center justify-center p-4 border rounded-md bg-gray-200 dark:bg-neutral-600"
+          style={{
+            transform: "rotateY(180deg)",
+            backfaceVisibility: "hidden",
+            WebkitBackfaceVisibility: "hidden",
+          }}
+        >
+          <p className="text-lg font-medium text-center">{answer}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Flashcards() {
   const { user, isLoaded, isSignedIn } = useUser();
   const [flashcards, setFlashcards] = useState([]);
@@ -224,11 +265,9 @@ export default function Flashcards() {
             ))}
           </div>
         )}
-
-        {/* Overlay modal for flashcard viewing */}
         {selectedFlashcardDoc && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white dark:bg-neutral-800 rounded-lg p-6 max-w-lg w-full relative">
+            <div className="bg-white dark:bg-neutral-800 rounded-lg p-6 max-w-2xl w-full relative min-h-[450px]">
               <button
                 onClick={handleCloseOverlay}
                 className="absolute top-2 right-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100"
@@ -241,17 +280,17 @@ export default function Flashcards() {
                     <h2 className="text-xl font-semibold mb-4">
                       {selectedFlashcardDoc.title}
                     </h2>
-                    <div className="mb-4">
-                      <p className="text-lg font-medium">
-                        Question:{" "}
-                        {selectedFlashcardDoc.flashcards[currentFlashcardIndex].question}
-                      </p>
-                      <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                        Answer:{" "}
-                        {selectedFlashcardDoc.flashcards[currentFlashcardIndex].answer}
-                      </p>
-                    </div>
-                    <div className="flex justify-between items-center">
+                    <FlippableCard
+                      question={
+                        selectedFlashcardDoc.flashcards[currentFlashcardIndex]
+                          .question
+                      }
+                      answer={
+                        selectedFlashcardDoc.flashcards[currentFlashcardIndex]
+                          .answer
+                      }
+                    />
+                    <div className="flex justify-between items-center mt-8">
                       <button
                         onClick={handlePrevCard}
                         disabled={currentFlashcardIndex === 0}
@@ -261,7 +300,8 @@ export default function Flashcards() {
                         Prev
                       </button>
                       <span className="text-sm text-gray-600 dark:text-gray-400">
-                        {currentFlashcardIndex + 1} of {selectedFlashcardDoc.flashcards.length}
+                        {currentFlashcardIndex + 1} of{" "}
+                        {selectedFlashcardDoc.flashcards.length}
                       </span>
                       <button
                         onClick={handleNextCard}
