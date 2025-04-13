@@ -108,7 +108,11 @@ export default function Notes() {
         {},
         { headers: { "X-Clerk-User-Id": user.id } }
       );
-      alert("Quiz generated successfully!");
+      if (response.status === 201 && response.data) {
+        alert("Quiz generated successfully!");
+        // Optionally, open the newly generated quiz in a new tab.
+        window.open(`/quizzes/${response.data._id}`, "_blank");
+      }
     } catch (error) {
       console.error("Error generating quiz:", error);
       alert("Failed to generate quiz. Please try again.");

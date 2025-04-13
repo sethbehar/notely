@@ -259,6 +259,123 @@ def get_flashcard(flashcard_id):
         return jsonify(flashcard_doc), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+    # --- Endpoint to Generate Quiz from a Specific Note ---
+
+@app.route("/notes/<note_id>/quiz", methods=["POST"])
+def generate_quiz(note_id):
+    clerk_user_id = request.headers.get("X-Clerk-User-Id")
+    if not clerk_user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    # Retrieve the note from the database.
+    try:
+        note = notes.find_one({"_id": ObjectId(note_id), "user_id": clerk_user_id})
+    except Exception as e:
+        return jsonify({"error": "Invalid note ID"}), 400
+
+    if not note:
+        return jsonify({"error": "Note not found"}), 404
+
+    note_content = note.get("content", "")
+    note_title = note.get("title", "Note")
+
+    prompt = (
+        f"Generate a multiple choice quiz for the following note content in JSON format. "
+        f"Each quiz question should be an object with the keys 'question', 'options' (an array), "
+        f"and 'answer' (an integer index referring to the correct option). "
+        f"Note content: {note_content}"
+    )
+    messages = [{"role": "user", "content": prompt}]
+
+    try:
+        completion = hf_client.chat.completions.create(
+            model="meta-llama/Meta-Llama-3-8B-Instruct",
+            messages=messages,
+            max_tokens=500
+        )
+        ai_response = completion.choices[0].message["content"]
+
+        print("Raw AI Response:", ai_response)  # Debug logging
+
+        # Try to extract text inside code fences (optionally with "json" language tag).
+        match = re.search(r"```(?:json)?(.*?)```", ai_response, re.DOTALL)
+        if match:
+            extracted = match.group(1).strip()
+        else:
+            extracted = ai_response.strip()
+
+        print("Extracted content before repair:", extracted)
+
+        # Instead of taking the substring between the first '[' and the last ']',
+        # extract all complete JSON objects using regex.
+        # This regex finds all instances of a JSON object (from '{' to the next '}').
+        matches = re.findall(r'\{.*?\}', extracted, re.DOTALL)
+        if not matches:
+            return jsonify({
+                "error": "Failed to extract valid JSON objects from the AI response.",
+                "raw_response": ai_response
+            }), 500
+
+        # Reconstruct the JSON array from the complete objects.
+        repaired_json_str = '[' + ','.join(matches) + ']'
+        print("Repaired JSON string:", repaired_json_str)
+
+        try:
+            quiz_list = json.loads(repaired_json_str)
+        except Exception as parse_error:
+            print("Error parsing repaired JSON:", parse_error)
+            return jsonify({
+                "error": "Failed to parse the repaired JSON output from the LLM.",
+                "details": str(parse_error),
+                "raw_response": ai_response
+            }), 500
+
+        quiz_doc = {
+            "user_id": clerk_user_id,
+            "note_id": note_id,
+            "title": f"Quiz for {note_title}",
+            "quiz": quiz_list,
+            "timestamp": datetime.now()
+        }
+
+        result = quizzes.insert_one(quiz_doc)
+        quiz_doc["_id"] = str(result.inserted_id)
+        return jsonify(quiz_doc), 201
+
+    except Exception as e:
+        print("General error in quiz endpoint:", e)
+        return jsonify({"error": str(e)}), 500
+
+# --- Endpoint to Retrieve a Specific Quiz ---
+
+@app.route("/quizzes/<quiz_id>", methods=["GET"])
+def get_quiz(quiz_id):
+    clerk_user_id = request.headers.get("X-Clerk-User-Id")
+    if not clerk_user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    try:
+        quiz_doc = quizzes.find_one({"_id": ObjectId(quiz_id), "user_id": clerk_user_id})
+        if not quiz_doc:
+            return jsonify({"error": "Quiz not found"}), 404
+        quiz_doc["_id"] = str(quiz_doc["_id"])
+        return jsonify(quiz_doc), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 50
+
+@app.route("/quizzes", methods=["GET"])
+def get_quizzes():
+    clerk_user_id = request.headers.get("X-Clerk-User-Id")
+    if not clerk_user_id:
+        return jsonify({"error": "Unauthorized"}), 401
+    try:
+        quiz_docs = list(quizzes.find({"user_id": clerk_user_id}).sort("timestamp", -1))
+        for quiz in quiz_docs:
+            quiz["_id"] = str(quiz["_id"])
+        return jsonify(quiz_docs), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":
