@@ -171,10 +171,10 @@ def generate_flashcards(note_id):
     if not clerk_user_id:
         return jsonify({"error": "Unauthorized"}), 401
 
-    # Retrieve the note from the db
+    # Retrieve the note
     try:
         note = notes.find_one({"_id": ObjectId(note_id), "user_id": clerk_user_id})
-    except Exception as e:
+    except Exception:
         return jsonify({"error": "Invalid note ID"}), 400
 
     if not note:
@@ -183,9 +183,19 @@ def generate_flashcards(note_id):
     note_content = note.get("content", "")
     note_title = note.get("title", "Note")
 
+    # Deliberate prompt that forces a single JSON array output
     prompt = (
-        f"Generate 10 flashcards for the following note content in JSON format. "
-        f"The JSON should be an array of objects, each with a 'question' and an 'answer'. "
+        f"Generate exactly 10 flashcards for the following note content.\n"
+        f"Output only a single JSON array of 5 objects, each with keys:\n"
+        f"  - \"question\": string\n"
+        f"  - \"answer\": string\n"
+        f"Wrap the array in triple backticks annotated with `json`, and include no other text.\n\n"
+        f"```json\n"
+        f"[\n"
+        f"  {{\"question\": \"...\", \"answer\": \"...\"}},\n"
+        f"  ...\n"
+        f"]\n"
+        f"```\n\n"
         f"Note content: {note_content}"
     )
     messages = [{"role": "user", "content": prompt}]
@@ -197,49 +207,37 @@ def generate_flashcards(note_id):
             max_tokens=500
         )
         ai_response = completion.choices[0].message["content"]
-
-                # --- after you get `ai_response` ---
         print("Raw AI Response:", ai_response)
 
-        # 1) Grab every ```json … ``` block
-        code_blocks = re.findall(r"```(?:json)?\s*([\s\S]*?)\s*```", ai_response)
-        if code_blocks:
-            combined = "\n".join(code_blocks)
+        # 1) Extract the single json‑fenced array
+        match = re.search(r"```json\s*([\s\S]*?)```", ai_response)
+        if match:
+            json_str = match.group(1).strip()
         else:
-            combined = ai_response
-
-        print("Combined blocks:\n", combined)
-
-        # 2) Try to pull out one big JSON array [...]
-        arr_match = re.search(r"\[[\s\S]*\]", combined)
-        if arr_match:
-            json_str = arr_match.group(0)
-        else:
-            # 3) Fallback: pull every complete {…} and wrap in [ … ]
-            objs = re.findall(r"\{[\s\S]*?\}", combined)
-            if not objs:
+            # 2) Fallback: look for an array literal anywhere
+            arr_match = re.search(r"\[[\s\S]*\]", ai_response)
+            if arr_match:
+                json_str = arr_match.group(0)
+            else:
                 return jsonify({
-                    "error": "Could not extract any JSON from LLM response",
-                    "raw": ai_response
+                    "error": "Failed to extract JSON array from LLM response",
+                    "raw_response": ai_response
                 }), 500
-            json_str = "[" + ",".join(objs) + "]"
 
-        print("Final JSON to parse:\n", json_str)
+        print("Extracted JSON string:", json_str)
 
+        # 3) Parse the JSON
         try:
-            quiz_list = json.loads(json_str)
-        except Exception as e:
-            print("JSON parse error:", e)
+            flashcards_list = json.loads(json_str)
+        except Exception as parse_error:
+            print("JSON parse error:", parse_error)
             return jsonify({
-                "error": "Failed to parse cleaned JSON",
-                "details": str(e),
-                "raw": json_str
+                "error": "Failed to parse JSON from LLM",
+                "details": str(parse_error),
+                "raw_json": json_str
             }), 500
 
-        # … now quiz_list has all your questions …
-
-
-
+        # Build and insert document
         flashcard_doc = {
             "user_id": clerk_user_id,
             "note_id": note_id,
@@ -247,13 +245,14 @@ def generate_flashcards(note_id):
             "flashcards": flashcards_list,
             "timestamp": datetime.now()
         }
-
         result = flashcards.insert_one(flashcard_doc)
         flashcard_doc["_id"] = str(result.inserted_id)
         return jsonify(flashcard_doc), 201
 
     except Exception as e:
+        print("General error in flashcards endpoint:", e)
         return jsonify({"error": str(e)}), 500
+
     
 # --- Existing Endpoints for Flashcards  ---
 
