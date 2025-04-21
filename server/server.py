@@ -44,7 +44,7 @@ def chat():
     try:
         print("Here")
         completion = hf_client.chat.completions.create(
-            model="meta-llama/Meta-Llama-3-8B-Instruct", 
+            model="mistralai/Mistral-7B-Instruct-v0.3", 
             messages=messages, 
             max_tokens=500
         )
@@ -192,7 +192,7 @@ def generate_flashcards(note_id):
 
     try:
         completion = hf_client.chat.completions.create(
-            model="meta-llama/Meta-Llama-3-8B-Instruct",
+            model="mistralai/Mistral-7B-Instruct-v0.3",
             messages=messages,
             max_tokens=500
         )
@@ -290,7 +290,7 @@ def generate_quiz(note_id):
 
     try:
         completion = hf_client.chat.completions.create(
-            model="meta-llama/Meta-Llama-3-8B-Instruct",
+            model="mistralai/Mistral-7B-Instruct-v0.3",
             messages=messages,
             max_tokens=500
         )
