@@ -105,13 +105,7 @@ export default function SidebarDemo() {
         <IconLayoutCards className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
       ),
     },
-    {
-      label: "Logout",
-      href: "#",
-      icon: (
-        <IconArrowLeft className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />
-      ),
-    },
+
   ];
 
   const handleSend = async () => {
@@ -296,49 +290,6 @@ const Dashboard = ({ userName, input, setInput, response, handleSend }) => {
         </div>
         <div className="pb-4 bg-white">
           <Note />
-        </div>
-        <div className="bg-white dark:bg-neutral-800 rounded-lg border-2 mx-4 border-gray-200 dark:border-neutral-700 mb-8">
-          <div className="px-4 py-4 border-b border-gray-200 dark:border-neutral-700 flex justify-between items-center">
-            <div className="flex items-center">
-              <IconClock className="h-4 w-4 text-gray-500 dark:text-gray-400 mr-2" />
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                Recent Notes
-              </h3>
-            </div>
-            <Link
-              href="/notes"
-              className="text-md font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300"
-            >
-              View All
-            </Link>
-          </div>
-          <div className="">
-            {recentNotes.map((note) => (
-              <div
-                key={note.id}
-                className="px-4 py-4 border-b border-gray-200 dark:border-neutral-700 last:border-0 hover:bg-gray-50 dark:hover:bg-neutral-700/50 transition-colors"
-              >
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-900 dark:text-white">
-                      {note.title}
-                    </h4>
-                    <div className="flex items-center mt-1">
-                      <span className="text-xs text-gray-500 dark:text-gray-400 mr-3">
-                        {note.updatedAt}
-                      </span>
-                      <span className="text-xs bg-gray-100 dark:bg-neutral-700 text-gray-600 dark:text-gray-300 px-2 py-0.5 rounded-full">
-                        {note.category}
-                      </span>
-                    </div>
-                  </div>
-                  <button className="text-xs font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300">
-                    Open →
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
     </div>
