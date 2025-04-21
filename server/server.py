@@ -184,7 +184,7 @@ def generate_flashcards(note_id):
     note_title = note.get("title", "Note")
 
     prompt = (
-        f"Generate flashcards for the following note content in JSON format. "
+        f"Generate 10 flashcards for the following note content in JSON format. "
         f"The JSON should be an array of objects, each with a 'question' and an 'answer'. "
         f"Note content: {note_content}"
     )
@@ -198,21 +198,46 @@ def generate_flashcards(note_id):
         )
         ai_response = completion.choices[0].message["content"]
 
-        # Extract JSON from the response
-        match = re.search(r"```(.*?)```", ai_response, re.DOTALL)
-        if match:
-            json_str = match.group(1).strip()
+                # --- after you get `ai_response` ---
+        print("Raw AI Response:", ai_response)
+
+        # 1) Grab every ```json … ``` block
+        code_blocks = re.findall(r"```(?:json)?\s*([\s\S]*?)\s*```", ai_response)
+        if code_blocks:
+            combined = "\n".join(code_blocks)
         else:
-            json_str = ai_response.strip()
+            combined = ai_response
+
+        print("Combined blocks:\n", combined)
+
+        # 2) Try to pull out one big JSON array [...]
+        arr_match = re.search(r"\[[\s\S]*\]", combined)
+        if arr_match:
+            json_str = arr_match.group(0)
+        else:
+            # 3) Fallback: pull every complete {…} and wrap in [ … ]
+            objs = re.findall(r"\{[\s\S]*?\}", combined)
+            if not objs:
+                return jsonify({
+                    "error": "Could not extract any JSON from LLM response",
+                    "raw": ai_response
+                }), 500
+            json_str = "[" + ",".join(objs) + "]"
+
+        print("Final JSON to parse:\n", json_str)
 
         try:
-            flashcards_list = json.loads(json_str)
-        except Exception as parse_error:
+            quiz_list = json.loads(json_str)
+        except Exception as e:
+            print("JSON parse error:", e)
             return jsonify({
-                "error": "Failed to parse LLM response as JSON",
-                "details": str(parse_error),
-                "raw_response": ai_response
+                "error": "Failed to parse cleaned JSON",
+                "details": str(e),
+                "raw": json_str
             }), 500
+
+        # … now quiz_list has all your questions …
+
 
 
         flashcard_doc = {
@@ -268,7 +293,6 @@ def generate_quiz(note_id):
     if not clerk_user_id:
         return jsonify({"error": "Unauthorized"}), 401
 
-    # Retrieve the note from the database.
     try:
         note = notes.find_one({"_id": ObjectId(note_id), "user_id": clerk_user_id})
     except Exception as e:
@@ -281,11 +305,20 @@ def generate_quiz(note_id):
     note_title = note.get("title", "Note")
 
     prompt = (
-        f"Generate a multiple choice quiz for the following note content in JSON format. "
-        f"Each quiz question should be an object with the keys 'question', 'options' (an array), "
-        f"and 'answer' (an integer index referring to the correct option). "
+        f"Generate exactly 5 multiple-choice questions for the following note content. "
+        f"**Output only** a single JSON array of 5 objects, each with keys:\n"
+        f"- 'question': string\n"
+        f"- 'options': array of strings\n"
+        f"- 'answer': integer index of the correct option\n"
+        f"Wrap the array in triple backticks annotated with `json`, and include no other text.\n\n```json\n"
+        f"[\n"
+        f"  {{\"question\": \"...\", \"options\": [\"...\",\"...\"], \"answer\": 0}},\n"
+        f"  ...\n"
+        f"]\n"
+        f"```\n\n"
         f"Note content: {note_content}"
     )
+
     messages = [{"role": "user", "content": prompt}]
 
     try:
@@ -296,39 +329,26 @@ def generate_quiz(note_id):
         )
         ai_response = completion.choices[0].message["content"]
 
-        print("Raw AI Response:", ai_response)  # Debug logging
+        print("Raw AI Response:", ai_response)
 
-        # Try to extract text inside code fences (optionally with "json" language tag).
-        match = re.search(r"```(?:json)?(.*?)```", ai_response, re.DOTALL)
-        if match:
-            extracted = match.group(1).strip()
-        else:
-            extracted = ai_response.strip()
-
-        print("Extracted content before repair:", extracted)
-
-        # Instead of taking the substring between the first '[' and the last ']',
-        # extract all complete JSON objects using regex.
-        # This regex finds all instances of a JSON object (from '{' to the next '}').
-        matches = re.findall(r'\{.*?\}', extracted, re.DOTALL)
-        if not matches:
+        match = re.search(r"```json\s*([\s\S]*?)```", ai_response)
+        if not match:
             return jsonify({
-                "error": "Failed to extract valid JSON objects from the AI response.",
+                "error": "LLM did not return a single JSON code‑fence",
                 "raw_response": ai_response
             }), 500
 
-        # Reconstruct the JSON array from the complete objects.
-        repaired_json_str = '[' + ','.join(matches) + ']'
-        print("Repaired JSON string:", repaired_json_str)
+        json_str = match.group(1).strip()
+        print("Extracted JSON string:", json_str)
 
         try:
-            quiz_list = json.loads(repaired_json_str)
-        except Exception as parse_error:
-            print("Error parsing repaired JSON:", parse_error)
+            quiz_list = json.loads(json_str)
+        except Exception as e:
+            print("JSON parse error:", e)
             return jsonify({
-                "error": "Failed to parse the repaired JSON output from the LLM.",
-                "details": str(parse_error),
-                "raw_response": ai_response
+            "error": "Failed to parse JSON from LLM",
+            "details": str(e),
+            "raw_json": json_str
             }), 500
 
         quiz_doc = {
