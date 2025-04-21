@@ -38,7 +38,7 @@ export function Hero() {
         </p>
         <div className="mt-8 flex gap-4">
           <Button size="lg" className="bg-emerald-500 hover:bg-emerald-600">
-            Sign Up
+          <a href="/dashboard">Dashboard</a>
           </Button>
           <Button size="lg" variant="outline" className="hover:bg-gray-200 transition-all">
             <a href="#demo">View Demo</a>
