@@ -16,9 +16,6 @@ import {
 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Multiple‑choice card
-// ─────────────────────────────────────────────────────────────────────────────
 function MultipleChoiceCard({
   question,
   options,
@@ -27,7 +24,6 @@ function MultipleChoiceCard({
 }) {
   const [selected, setSelected] = useState(null);
 
-  // reset local state whenever we receive a new question
   useEffect(() => {
     setSelected(null);
   }, [question]);
@@ -35,7 +31,7 @@ function MultipleChoiceCard({
   const actualCorrect = options[correctAnswer];
 
   const handleClick = (option) => {
-    if (selected !== null) return; // already answered
+    if (selected !== null) return; 
     setSelected(option);
     onAnswerSelected(option, option === actualCorrect);
   };
@@ -66,9 +62,6 @@ function MultipleChoiceCard({
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Main page
-// ─────────────────────────────────────────────────────────────────────────────
 export default function Quizzes() {
   const { user, isLoaded, isSignedIn } = useUser();
 
@@ -79,13 +72,10 @@ export default function Quizzes() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeSort, setActiveSort] = useState("Recent");
 
-  // overlay state
   const [selectedQuizDoc, setSelectedQuizDoc] = useState(null);
   const [currentQuizIndex, setCurrentQuizIndex] = useState(0);
   const [answered, setAnswered] = useState(false);
 
-  // ──────────────────────────────────────────
-  // fetch quizzes
   useEffect(() => {
     if (isLoaded && isSignedIn && user) {
       axios
@@ -104,8 +94,6 @@ export default function Quizzes() {
     }
   }, [isLoaded, isSignedIn, user]);
 
-  // ──────────────────────────────────────────
-  // derived lists
   const filteredQuizzes = quizzes.filter((q) =>
     q.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -116,8 +104,6 @@ export default function Quizzes() {
       : new Date(b.timestamp) - new Date(a.timestamp)
   );
 
-  // ──────────────────────────────────────────
-  // overlay handlers
   const openQuiz = (quiz) => {
     setSelectedQuizDoc(quiz);
     setCurrentQuizIndex(0);
@@ -148,8 +134,6 @@ export default function Quizzes() {
     }
   };
 
-  // ──────────────────────────────────────────
-  // guards
   if (!isLoaded) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -166,8 +150,6 @@ export default function Quizzes() {
     );
   }
 
-  // ──────────────────────────────────────────
-  // view
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-neutral-900 font-poppins">
       {/* Header */}
@@ -323,7 +305,6 @@ export default function Quizzes() {
                 {selectedQuizDoc.title}
               </h2>
 
-              {/* key ensures full remount → internal selection resets */}
               <MultipleChoiceCard
                 key={currentQuizIndex}
                 question={selectedQuizDoc.quiz[currentQuizIndex].question}
