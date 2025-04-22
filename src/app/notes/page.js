@@ -13,7 +13,8 @@ import {
   IconCards, 
   IconQuestionMark,
   IconFilter,
-  IconFolder
+  IconFolder,
+  IconLoader2
 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 
@@ -24,6 +25,9 @@ export default function Notes() {
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeSort, setActiveSort] = useState("Recent");
+  // Add loading states for flashcards and quiz generation
+  const [generatingFlashcards, setGeneratingFlashcards] = useState({});
+  const [generatingQuiz, setGeneratingQuiz] = useState({});
 
   useEffect(() => {
     if (isLoaded && isSignedIn && user) {
@@ -57,36 +61,11 @@ export default function Notes() {
     }
   });
 
-  // Handle note actions
-  const handleOpenNote = (noteId) => {
-    console.log("Opening note:", noteId);
-    window.open(`/notes/${noteId}`, "_blank");
-  };
-
-  const handleDownloadNote = (note) => {
-    console.log("Downloading note:", note._id);
-    axios
-      .get(`http://127.0.0.1:5000/notes/${note._id}/download`, {
-        headers: { "X-Clerk-User-Id": user.id },
-        responseType: "blob"
-      })
-      .then((response) => {
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", `${note.title}.pdf`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      })
-      .catch((error) => {
-        console.error("Error downloading note:", error);
-        alert("Failed to download note. Please try again.");
-      });
-  };
-
   const handleGenerateFlashcards = async (noteId) => {
     console.log("Generating flashcards for note:", noteId);
+    // Set loading state for this specific note
+    setGeneratingFlashcards(prev => ({ ...prev, [noteId]: true }));
+    
     try {
       const response = await axios.post(
         `http://127.0.0.1:5000/notes/${noteId}/flashcards`,
@@ -97,11 +76,17 @@ export default function Notes() {
     } catch (error) {
       console.error("Error generating flashcards:", error);
       alert("Failed to generate flashcards. Please try again.");
+    } finally {
+      // Clear loading state
+      setGeneratingFlashcards(prev => ({ ...prev, [noteId]: false }));
     }
   };
 
   const handleGenerateQuiz = async (noteId) => {
     console.log("Generating quiz for note:", noteId);
+    // Set loading state for this specific note
+    setGeneratingQuiz(prev => ({ ...prev, [noteId]: true }));
+    
     try {
       const response = await axios.post(
         `http://127.0.0.1:5000/notes/${noteId}/quiz`,
@@ -116,6 +101,9 @@ export default function Notes() {
     } catch (error) {
       console.error("Error generating quiz:", error);
       alert("Failed to generate quiz. Please try again.");
+    } finally {
+      // Clear loading state
+      setGeneratingQuiz(prev => ({ ...prev, [noteId]: false }));
     }
   };
 
@@ -244,36 +232,62 @@ export default function Notes() {
                   <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
                     {new Date(note.timestamp).toLocaleString()}
                   </p>
-
-                  {/* Action buttons */}
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       onClick={() => handleOpenNote(note._id)}
-                      className="flex items-center justify-center px-3 py-1.5 bg-emerald-500 text-white text-sm rounded hover:bg-emerald-600 transition-colors"
+                      className="flex items-center justify-center px-3 py-1.5 bg-gray-400 cursor-not-allowed text-white text-sm rounded hover:bg-red-400 transition-colors"
                     >
                       <IconEye className="h-4 w-4 mr-1" />
                       <span>Open</span>
                     </button>
                     <button
                       onClick={() => handleDownloadNote(note)}
-                      className="flex items-center justify-center px-3 py-1.5 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 transition-colors"
+                      className="flex items-center justify-center px-3 py-1.5 bg-gray-400 cursor-not-allowed text-white text-sm rounded hover:bg-red-400 transition-colors"
                     >
                       <IconDownload className="h-4 w-4 mr-1" />
                       <span>Download</span>
                     </button>
                     <button
                       onClick={() => handleGenerateFlashcards(note._id)}
-                      className="flex items-center justify-center px-3 py-1.5 bg-purple-500 text-white text-sm rounded hover:bg-purple-600 transition-colors"
+                      disabled={generatingFlashcards[note._id]}
+                      className={`flex items-center justify-center px-3 py-1.5 text-sm rounded transition-colors ${
+                        generatingFlashcards[note._id] 
+                          ? "bg-purple-400 cursor-not-allowed" 
+                          : "bg-purple-500 hover:bg-purple-600"
+                      } text-white`}
                     >
-                      <IconCards className="h-4 w-4 mr-1" />
-                      <span>Flashcards</span>
+                      {generatingFlashcards[note._id] ? (
+                        <>
+                          <IconLoader2 className="h-4 w-4 mr-1 animate-spin" />
+                          <span>Generating...</span>
+                        </>
+                      ) : (
+                        <>
+                          <IconCards className="h-4 w-4 mr-1" />
+                          <span>Flashcards</span>
+                        </>
+                      )}
                     </button>
                     <button
                       onClick={() => handleGenerateQuiz(note._id)}
-                      className="flex items-center justify-center px-3 py-1.5 bg-amber-500 text-white text-sm rounded hover:bg-amber-600 transition-colors"
+                      disabled={generatingQuiz[note._id]}
+                      className={`flex items-center justify-center px-3 py-1.5 text-sm rounded transition-colors ${
+                        generatingQuiz[note._id] 
+                          ? "bg-amber-400 cursor-not-allowed" 
+                          : "bg-amber-500 hover:bg-amber-600"
+                      } text-white`}
                     >
-                      <IconQuestionMark className="h-4 w-4 mr-1" />
-                      <span>Quiz</span>
+                      {generatingQuiz[note._id] ? (
+                        <>
+                          <IconLoader2 className="h-4 w-4 mr-1 animate-spin" />
+                          <span>Generating...</span>
+                        </>
+                      ) : (
+                        <>
+                          <IconQuestionMark className="h-4 w-4 mr-1" />
+                          <span>Quiz</span>
+                        </>
+                      )}
                     </button>
                   </div>
                 </div>
