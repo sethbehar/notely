@@ -95,8 +95,6 @@ export default function Notes() {
       );
       if (response.status === 201 && response.data) {
         alert("Quiz generated successfully!");
-        // Optionally, open the newly generated quiz in a new tab.
-        window.open(`/quizzes/${response.data._id}`, "_blank");
       }
     } catch (error) {
       console.error("Error generating quiz:", error);
