@@ -196,6 +196,9 @@ function Note() {
         { headers: { "X-Clerk-User-Id": user.id } }
       );
       setSaveMessage("Note saved successfully!");
+      // Clear the title and content after saving
+      setTitle("");
+      setContent("");
     } catch (error) {
       console.error("Error saving note:", error);
       setSaveMessage("Failed to save note.");

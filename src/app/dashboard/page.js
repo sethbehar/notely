@@ -23,27 +23,6 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import Note from "@/components/note";
 
-const recentNotes = [
-  {
-    id: 1,
-    title: "Biology 101: Cell Structure",
-    updatedAt: "2 hours ago",
-    category: "Biology",
-  },
-  {
-    id: 2,
-    title: "History: World War II Overview",
-    updatedAt: "Yesterday",
-    category: "History",
-  },
-  {
-    id: 3,
-    title: "Calculus: Integration Techniques",
-    updatedAt: "3 days ago",
-    category: "Mathematics",
-  },
-];
-
 export default function SidebarDemo() {
   const { user, isLoaded, isSignedIn } = useUser();
   const [open, setOpen] = useState(false);
